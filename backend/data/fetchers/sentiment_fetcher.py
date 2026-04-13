@@ -18,7 +18,7 @@ from typing import Optional
 
 import pandas as pd
 import requests
-from loguru import logger
+from backend.log import logger
 
 from backend.config import get_settings
 

@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 import pandas as pd
-from loguru import logger
+from backend.log import logger
 
 from backend.config import get_settings
 

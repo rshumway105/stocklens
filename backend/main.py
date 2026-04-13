@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from loguru import logger
+from backend.log import logger
 
 from backend.api.routes import macro, predictions, watchlist
 from backend.api.schemas import HealthResponse

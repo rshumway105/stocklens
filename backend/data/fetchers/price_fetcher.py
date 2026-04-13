@@ -14,7 +14,7 @@ from typing import Optional
 
 import pandas as pd
 import yfinance as yf
-from loguru import logger
+from backend.log import logger
 
 from backend.config import get_settings
 

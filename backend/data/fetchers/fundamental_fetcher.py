@@ -17,7 +17,7 @@ from typing import Any, Optional
 import numpy as np
 import pandas as pd
 import yfinance as yf
-from loguru import logger
+from backend.log import logger
 
 
 def fetch_fundamentals(ticker: str) -> dict[str, Any]:
