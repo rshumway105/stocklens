@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base resets ── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1e293b #0a0e17;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0e17;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* ── Terminal aesthetic utilities ── */
+@layer components {
+  .card {
+    @apply bg-terminal-surface border border-terminal-border rounded-lg;
+  }
+
+  .card-header {
+    @apply px-4 py-3 border-b border-terminal-border flex items-center justify-between;
+  }
+
+  .card-body {
+    @apply p-4;
+  }
+
+  .badge-overvalued {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-accent-red/15 text-accent-red border border-accent-red/30;
+  }
+
+  .badge-undervalued {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-accent-green/15 text-accent-green border border-accent-green/30;
+  }
+
+  .badge-fairly-valued {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-accent-amber/15 text-accent-amber border border-accent-amber/30;
+  }
+
+  .badge-unknown {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-terminal-muted/15 text-terminal-dim border border-terminal-border;
+  }
+
+  .data-label {
+    @apply text-xs font-mono uppercase tracking-wider text-terminal-muted;
+  }
+
+  .data-value {
+    @apply text-lg font-mono font-semibold text-terminal-text;
+  }
+
+  .data-value-sm {
+    @apply text-sm font-mono font-medium text-terminal-text;
+  }
+
+  .nav-link {
+    @apply px-4 py-2 text-sm font-body font-medium text-terminal-dim hover:text-terminal-text transition-colors relative;
+  }
+
+  .nav-link-active {
+    @apply text-accent-amber;
+  }
+
+  .nav-link-active::after {
+    content: '';
+    @apply absolute bottom-0 left-4 right-4 h-0.5 bg-accent-amber rounded-full;
+  }
+
+  .table-row {
+    @apply border-b border-terminal-border/50 hover:bg-terminal-elevated/50 transition-colors cursor-pointer;
+  }
+
+  .table-header {
+    @apply text-xs font-mono uppercase tracking-wider text-terminal-muted px-4 py-2.5 text-left border-b border-terminal-border;
+  }
+
+  .table-cell {
+    @apply px-4 py-3 text-sm font-mono;
+  }
+
+  .skeleton {
+    @apply animate-pulse bg-terminal-elevated rounded;
+  }
+}
+
+/* ── Subtle grain overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
