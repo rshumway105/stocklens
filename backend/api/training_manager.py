@@ -140,12 +140,13 @@ def run_training_pipeline(ticker: str):
             from backend.models.trainer import WalkForwardTrainer, WalkForwardConfig
 
             config = WalkForwardConfig(
-                min_train_days=756, test_window_days=63, step_days=63, purge_days=5
+                min_train_days=756, test_window_days=63, step_days=126,
+                purge_days=5, max_folds=4,
             )
             trainer = WalkForwardTrainer(config)
 
             rf_bt = trainer.backtest_return_forecaster(
-                feature_matrix, horizons=["5d", "21d", "63d", "126d"]
+                feature_matrix, horizons=["21d"]
             )
             fv_bt = trainer.backtest_fair_value(feature_matrix)
 
