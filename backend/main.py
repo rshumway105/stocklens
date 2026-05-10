@@ -41,7 +41,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS — allow the React dev server (localhost:5173 for Vite, 3000 for CRA)
+# CORS — allow the React dev server and production Vercel domains
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -49,6 +49,8 @@ app.add_middleware(
         "http://localhost:5173",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:5173",
+        "https://stocklens-psi.vercel.app",
+        "https://*.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
