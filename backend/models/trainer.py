@@ -37,7 +37,7 @@ class WalkForwardConfig:
     test_window_days: int = 63  # ~3 months
 
     # Step size: how many days to slide forward each iteration
-    step_days: int = 63
+    step_days: int = 126
 
     # Purge gap: days between train end and test start (avoids leakage
     # from overlapping forward return windows)

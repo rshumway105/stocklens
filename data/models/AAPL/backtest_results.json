@@ -1,0 +1,44 @@
+{
+  "ticker": "AAPL",
+  "return_forecaster": {
+    "metrics": {
+      "rmse_5d": 0.04319259345200664,
+      "mae_5d": 0.03198214067971921,
+      "direction_accuracy_5d": 0.5487528344671202,
+      "ic_5d": 0.12142444815074457,
+      "interval_coverage_5d": 0.5986394557823129,
+      "rmse_21d": 0.07569780740221195,
+      "mae_21d": 0.059674038361615334,
+      "direction_accuracy_21d": 0.5079365079365079,
+      "ic_21d": 0.03427035149724225,
+      "interval_coverage_21d": 0.46485260770975056,
+      "rmse_63d": 0.10474473618116882,
+      "mae_63d": 0.08518163642380122,
+      "direction_accuracy_63d": 0.5209302325581395,
+      "ic_63d": 0.4150498505972525,
+      "interval_coverage_63d": 0.5325581395348837,
+      "rmse_126d": 0.12254215195608201,
+      "mae_126d": 0.1021162982682432,
+      "direction_accuracy_126d": 0.7329700272479565,
+      "ic_126d": 0.6983497798605947,
+      "interval_coverage_126d": 0.37329700272479566
+    },
+    "n_folds": 7,
+    "n_predictions": 1764,
+    "horizons": [
+      "5d",
+      "21d",
+      "63d",
+      "126d"
+    ]
+  },
+  "fair_value_estimator": {
+    "metrics": {
+      "mae": 26.456792610843166,
+      "rmse": 30.27181404612333,
+      "mean_valuation_gap": 0.0869233402165026
+    },
+    "n_folds": 7,
+    "n_predictions": 441
+  }
+}

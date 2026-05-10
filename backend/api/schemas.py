@@ -260,6 +260,26 @@ class BacktestResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Signal history
+# ---------------------------------------------------------------------------
+
+class SignalHistoryItem(BaseModel):
+    id: int
+    ticker: str
+    signal: str
+    confidence_score: Optional[float] = None
+    model_predicted_price: Optional[float] = None
+    actual_price_at_signal: Optional[float] = None
+    created_at: str
+    price_change_pct: Optional[float] = None
+
+
+class SignalHistoryResponse(BaseModel):
+    items: list[SignalHistoryItem]
+    count: int
+
+
+# ---------------------------------------------------------------------------
 # Health
 # ---------------------------------------------------------------------------
 

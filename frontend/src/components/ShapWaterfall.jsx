@@ -32,7 +32,7 @@ export default function ShapWaterfall({ drivers = [], height = 320 }) {
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <BarChart data={data} layout="vertical" margin={{ top: 4, right: 20, bottom: 4, left: 120 }}>
+      <BarChart data={data} layout="vertical" margin={{ top: 4, right: 20, bottom: 4, left: 140 }}>
         <XAxis
           type="number"
           tick={{ fill: '#475569', fontSize: 10, fontFamily: 'JetBrains Mono' }}
@@ -42,10 +42,10 @@ export default function ShapWaterfall({ drivers = [], height = 320 }) {
         <YAxis
           type="category"
           dataKey="feature"
-          tick={{ fill: '#94a3b8', fontSize: 11, fontFamily: 'JetBrains Mono' }}
+          tick={{ fill: '#94a3b8', fontSize: 10, fontFamily: 'JetBrains Mono' }}
           tickLine={false}
           axisLine={false}
-          width={115}
+          width={135}
         />
         <Tooltip
           contentStyle={{
@@ -86,5 +86,5 @@ function formatFeatureName(name) {
     .replace(/Obv/g, 'OBV')
     .replace(/Zscore/g, 'Z-Score')
     .replace(/Pct/g, '%')
-    .substring(0, 20)
+    .substring(0, 26)
 }

@@ -66,7 +66,7 @@
   }
 
   .nav-link {
-    @apply px-4 py-2 text-sm font-body font-medium text-terminal-dim hover:text-terminal-text transition-colors relative;
+    @apply px-4 py-2 text-sm font-medium text-terminal-dim hover:text-terminal-text transition-colors relative;
   }
 
   .nav-link-active {
@@ -93,6 +93,22 @@
   .skeleton {
     @apply animate-pulse bg-terminal-elevated rounded;
   }
+}
+
+/* ── Ticker tape infinite scroll ── */
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-animate {
+  animation: ticker-scroll linear infinite;
+  white-space: nowrap;
+  will-change: transform;
+  display: inline-flex;
+  align-items: center;
+}
+.ticker-animate:hover {
+  animation-play-state: paused;
 }
 
 /* ── Subtle grain overlay ── */

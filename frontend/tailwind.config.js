@@ -24,8 +24,6 @@ export default {
       },
       fontFamily: {
         mono: ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
-        display: ['"Instrument Sans"', '"DM Sans"', 'sans-serif'],
-        body: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
       },
     },
   },

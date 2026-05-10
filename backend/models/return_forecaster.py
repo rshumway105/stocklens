@@ -42,7 +42,7 @@ class ReturnForecasterConfig:
         "objective": "reg:squarederror",
         "max_depth": 6,
         "learning_rate": 0.05,
-        "n_estimators": 500,
+        "n_estimators": 200,
         "subsample": 0.8,
         "colsample_bytree": 0.8,
         "min_child_weight": 10,
@@ -51,6 +51,26 @@ class ReturnForecasterConfig:
         "random_state": 42,
         "n_jobs": -1,
     })
+
+    # LightGBM hyperparameters — blended with XGBoost when lgbm is installed
+    use_lgbm: bool = True
+    lgbm_params: dict[str, Any] = field(default_factory=lambda: {
+        "objective": "regression",
+        "num_leaves": 63,
+        "learning_rate": 0.05,
+        "n_estimators": 200,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "min_child_samples": 10,
+        "reg_alpha": 0.1,
+        "reg_lambda": 1.0,
+        "random_state": 42,
+        "n_jobs": -1,
+        "verbose": -1,
+    })
+
+    # Blend weight: final = lgbm_blend * lgbm + (1 - lgbm_blend) * xgb
+    lgbm_blend: float = 0.5
 
     # Quantile regression params for prediction intervals
     quantile_lower: float = 0.1   # 10th percentile
@@ -81,13 +101,15 @@ class ReturnForecaster:
 
     def __init__(self, config: Optional[ReturnForecasterConfig] = None):
         self.config = config or ReturnForecasterConfig()
-        self.models: dict[str, Any] = {}            # horizon -> fitted model
+        self.models: dict[str, Any] = {}            # horizon -> fitted xgb model
+        self.lgbm_models: dict[str, Any] = {}       # horizon -> fitted lgbm model
         self.models_lower: dict[str, Any] = {}      # horizon -> lower quantile model
         self.models_upper: dict[str, Any] = {}      # horizon -> upper quantile model
         self.feature_names: list[str] = []
         self.feature_importances: dict[str, pd.Series] = {}
         self.training_metadata: dict[str, Any] = {}
         self._fitted = False
+        self._lgbm_available = False
 
     def fit(
         self,
@@ -156,6 +178,18 @@ class ReturnForecaster:
             ).sort_values(ascending=False)
             self.feature_importances[horizon] = importance
 
+            # LightGBM model — blended with XGBoost at prediction time
+            if self.config.use_lgbm:
+                try:
+                    import lightgbm as lgb
+                    lgbm_model = lgb.LGBMRegressor(**self.config.lgbm_params)
+                    lgbm_model.fit(X_train, y_train)
+                    self.lgbm_models[horizon] = lgbm_model
+                    self._lgbm_available = True
+                    logger.info("  LightGBM model fitted for {}", horizon)
+                except ImportError:
+                    logger.info("LightGBM not installed — using XGBoost only (pip install lightgbm to enable)")
+
             # Quantile models for prediction intervals
             if fit_quantiles:
                 for q, q_models, label in [
@@ -178,6 +212,7 @@ class ReturnForecaster:
             "n_samples": len(X),
             "n_features": len(self.feature_names),
             "horizons": list(self.models.keys()),
+            "lgbm_blend": self._lgbm_available,
         }
 
         return self
@@ -206,7 +241,15 @@ class ReturnForecaster:
 
         for horizon, model in self.models.items():
             pred_df = pd.DataFrame(index=X.index)
-            pred_df["predicted_return"] = model.predict(X)
+            xgb_pred = model.predict(X)
+
+            # Blend with LightGBM if available
+            if horizon in self.lgbm_models:
+                lgbm_pred = self.lgbm_models[horizon].predict(X)
+                blend = self.config.lgbm_blend
+                pred_df["predicted_return"] = blend * lgbm_pred + (1 - blend) * xgb_pred
+            else:
+                pred_df["predicted_return"] = xgb_pred
 
             if include_intervals and horizon in self.models_lower:
                 pred_df["lower_bound"] = self.models_lower[horizon].predict(X)
@@ -257,6 +300,9 @@ class ReturnForecaster:
         for horizon, model in self.models.items():
             with open(path / f"return_forecaster_{horizon}.pkl", "wb") as f:
                 pickle.dump(model, f)
+            if horizon in self.lgbm_models:
+                with open(path / f"return_forecaster_{horizon}_lgbm.pkl", "wb") as f:
+                    pickle.dump(self.lgbm_models[horizon], f)
             if horizon in self.models_lower:
                 with open(path / f"return_forecaster_{horizon}_lower.pkl", "wb") as f:
                     pickle.dump(self.models_lower[horizon], f)
@@ -299,6 +345,12 @@ class ReturnForecaster:
             if pkl_path.exists():
                 with open(pkl_path, "rb") as f:
                     model.models[horizon] = pickle.load(f)
+
+            lgbm_path = path / f"return_forecaster_{horizon}_lgbm.pkl"
+            if lgbm_path.exists():
+                with open(lgbm_path, "rb") as f:
+                    model.lgbm_models[horizon] = pickle.load(f)
+                    model._lgbm_available = True
 
             lower_path = path / f"return_forecaster_{horizon}_lower.pkl"
             if lower_path.exists():

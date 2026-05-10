@@ -1,6 +1,8 @@
 # Environment & secrets
 .env
+.env.development
 *.env.local
+# .env.example is intentionally tracked — it's a safe template with no secrets
 
 # Python
 __pycache__/
@@ -39,6 +41,7 @@ frontend/node_modules/
 frontend/dist/
 frontend/build/
 frontend/.env.local
+frontend/.env.development
 
 # Jupyter
 .ipynb_checkpoints/

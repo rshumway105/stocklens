@@ -1,0 +1,44 @@
+{
+  "ticker": "VOO",
+  "return_forecaster": {
+    "metrics": {
+      "rmse_5d": 0.02495856236786716,
+      "mae_5d": 0.01824945966880491,
+      "direction_accuracy_5d": 0.5079365079365079,
+      "ic_5d": -0.006051371597590086,
+      "interval_coverage_5d": 0.5668934240362812,
+      "rmse_21d": 0.04696540323959042,
+      "mae_21d": 0.035390355446213106,
+      "direction_accuracy_21d": 0.5011337868480725,
+      "ic_21d": -0.2194442812089871,
+      "interval_coverage_21d": 0.4875283446712018,
+      "rmse_63d": 0.06833693767164113,
+      "mae_63d": 0.04888793473276503,
+      "direction_accuracy_63d": 0.7023255813953488,
+      "ic_63d": 0.1311198055707849,
+      "interval_coverage_63d": 0.4697674418604651,
+      "rmse_126d": 0.07756714811362345,
+      "mae_126d": 0.05676583801265072,
+      "direction_accuracy_126d": 0.8719346049046321,
+      "ic_126d": 0.18740520022295548,
+      "interval_coverage_126d": 0.33242506811989103
+    },
+    "n_folds": 7,
+    "n_predictions": 1764,
+    "horizons": [
+      "5d",
+      "21d",
+      "63d",
+      "126d"
+    ]
+  },
+  "fair_value_estimator": {
+    "metrics": {
+      "mae": 38.03897994337709,
+      "rmse": 43.087836914305605,
+      "mean_valuation_gap": 0.06656750494549936
+    },
+    "n_folds": 7,
+    "n_predictions": 441
+  }
+}

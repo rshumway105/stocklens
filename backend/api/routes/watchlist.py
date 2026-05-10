@@ -4,7 +4,7 @@ Watchlist API routes.
 Endpoints for managing the user's tracked tickers.
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, BackgroundTasks, HTTPException
 
 from backend.api.schemas import WatchlistAddRequest, WatchlistItem, WatchlistResponse
 from backend.data.fetchers.price_fetcher import fetch_ticker_info
@@ -31,11 +31,11 @@ async def list_watchlist():
 
 
 @router.post("", response_model=WatchlistItem, status_code=201)
-async def add_ticker(req: WatchlistAddRequest):
+async def add_ticker(req: WatchlistAddRequest, background_tasks: BackgroundTasks):
     """
-    Add a ticker to the watchlist.
+    Add a ticker to the watchlist and kick off background training.
 
-    Fetches basic info (name, sector) from yfinance before saving.
+    Returns immediately. Training status is available at GET /api/status/{ticker}.
     """
     ticker = req.ticker.upper()
     info = fetch_ticker_info(ticker)
@@ -52,6 +52,11 @@ async def add_ticker(req: WatchlistAddRequest):
         sector=info.get("sector", ""),
         industry=info.get("industry", ""),
     )
+
+    # Kick off the full data-fetch + model-training pipeline in the background
+    from backend.api.training_manager import start_training, models_exist
+    if not models_exist(ticker):
+        background_tasks.add_task(start_training, ticker)
 
     return WatchlistItem(
         ticker=ticker,

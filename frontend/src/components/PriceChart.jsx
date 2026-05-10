@@ -64,7 +64,7 @@ export default function PriceChart({ bars = [], height = 400 }) {
           }}
           labelStyle={{ color: '#94a3b8' }}
           formatter={(value, name) => {
-            const labels = { close: 'Price', fairValue: 'Fair Value', upper: 'Upper', lower: 'Lower' }
+            const labels = { close: 'Price', fairValue: '63-Day MA', upper: 'Upper', lower: 'Lower' }
             return [`$${value?.toFixed(2)}`, labels[name] || name]
           }}
         />

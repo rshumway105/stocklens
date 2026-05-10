@@ -110,7 +110,7 @@ class FairValueConfig:
         "objective": "reg:squarederror",
         "max_depth": 5,
         "learning_rate": 0.03,
-        "n_estimators": 400,
+        "n_estimators": 200,
         "subsample": 0.8,
         "colsample_bytree": 0.7,
         "min_child_weight": 15,

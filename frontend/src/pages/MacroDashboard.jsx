@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useApi } from '../hooks/useApi'
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis,
-  Tooltip, CartesianGrid,
+  Tooltip, CartesianGrid, Legend,
 } from 'recharts'
 
 const CATEGORY_MAP = {
@@ -44,8 +44,8 @@ export default function MacroDashboard() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-display font-bold text-terminal-text">Macro Dashboard</h1>
-        <p className="text-sm font-body text-terminal-muted mt-1">
+        <h1 className="text-2xl font-mono font-bold text-terminal-text">Macro Dashboard</h1>
+        <p className="text-sm text-terminal-muted mt-1">
           Macroeconomic indicators influencing the model's view
         </p>
       </div>
@@ -77,9 +77,13 @@ export default function MacroDashboard() {
                       <span className={`text-sm font-mono ${isActive ? 'text-accent-amber' : 'text-terminal-dim'}`}>
                         {FRIENDLY_NAMES[key] || key}
                       </span>
-                      {item && (
-                        <span className="text-[10px] font-mono text-terminal-muted">
-                          {item.series_id}
+                      {item?.last_value != null && (
+                        <span className={`text-xs font-mono tabular-nums font-semibold ${
+                          item.direction === 'rising' ? 'text-accent-green' :
+                          item.direction === 'falling' ? 'text-accent-red' :
+                          'text-terminal-text'
+                        }`}>
+                          {item.last_value.toFixed(2)}
                         </span>
                       )}
                     </button>
@@ -132,46 +136,101 @@ export default function MacroDashboard() {
   )
 }
 
+// Compute a rolling SMA of `window` periods on an array of { value } objects
+function computeSMA(data, window) {
+  return data.map((d, i) => {
+    if (i < window - 1) return { ...d, trend: null }
+    const slice = data.slice(i - window + 1, i + 1)
+    const avg = slice.reduce((sum, x) => sum + (x.value ?? 0), 0) / window
+    return { ...d, trend: avg }
+  })
+}
+
+// Pick a trend window based on data frequency (monthly = 6, weekly = 12, daily = 20)
+function trendWindow(data) {
+  if (data.length < 30) return 3
+  // Estimate frequency by average days between observations
+  const span = data.length
+  if (span < 100) return 6   // likely monthly data
+  if (span < 500) return 12  // likely weekly
+  return 20                  // daily
+}
+
 function MacroChart({ data, name }) {
   // Show last 5 years max
-  const recent = data.slice(-1260)
+  const recent = useMemo(() => {
+    const sliced = data.slice(-1260)
+    return computeSMA(sliced, trendWindow(sliced))
+  }, [data])
+
+  const hasTrend = recent.some((d) => d.trend != null)
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <LineChart data={recent} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-        <XAxis
-          dataKey="date"
-          tick={{ fill: '#475569', fontSize: 10, fontFamily: 'JetBrains Mono' }}
-          tickLine={false}
-          axisLine={{ stroke: '#1e293b' }}
-          interval="preserveStartEnd"
-          minTickGap={80}
-        />
-        <YAxis
-          tick={{ fill: '#475569', fontSize: 10, fontFamily: 'JetBrains Mono' }}
-          tickLine={false}
-          axisLine={false}
-          width={50}
-        />
-        <Tooltip
-          contentStyle={{
-            background: '#111827',
-            border: '1px solid #1e293b',
-            borderRadius: '8px',
-            fontFamily: 'JetBrains Mono',
-            fontSize: '12px',
-          }}
-          formatter={(value) => [value?.toFixed(3), name]}
-        />
-        <Line
-          type="monotone"
-          dataKey="value"
-          stroke="#06b6d4"
-          strokeWidth={1.5}
-          dot={false}
-        />
-      </LineChart>
-    </ResponsiveContainer>
+    <>
+      {/* Legend */}
+      <div className="flex items-center gap-5 px-1 pb-2 text-xs font-mono text-terminal-muted">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block w-4 h-0.5 bg-cyan-400" />
+          {name}
+        </span>
+        {hasTrend && (
+          <span className="flex items-center gap-1.5">
+            <span className="inline-block w-4 border-t-2 border-dashed border-amber-400" />
+            Trend (rolling avg)
+          </span>
+        )}
+      </div>
+      <ResponsiveContainer width="100%" height={370}>
+        <LineChart data={recent} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+          <XAxis
+            dataKey="date"
+            tick={{ fill: '#475569', fontSize: 10, fontFamily: 'JetBrains Mono' }}
+            tickLine={false}
+            axisLine={{ stroke: '#1e293b' }}
+            interval="preserveStartEnd"
+            minTickGap={80}
+          />
+          <YAxis
+            tick={{ fill: '#475569', fontSize: 10, fontFamily: 'JetBrains Mono' }}
+            tickLine={false}
+            axisLine={false}
+            width={50}
+          />
+          <Tooltip
+            contentStyle={{
+              background: '#111827',
+              border: '1px solid #1e293b',
+              borderRadius: '8px',
+              fontFamily: 'JetBrains Mono',
+              fontSize: '12px',
+            }}
+            formatter={(value, key) => [
+              value?.toFixed(3),
+              key === 'trend' ? 'Trend' : name,
+            ]}
+          />
+          <Line
+            type="monotone"
+            dataKey="value"
+            stroke="#06b6d4"
+            strokeWidth={1.5}
+            dot={false}
+            connectNulls
+          />
+          {hasTrend && (
+            <Line
+              type="monotone"
+              dataKey="trend"
+              stroke="#f59e0b"
+              strokeWidth={2}
+              strokeDasharray="6 3"
+              dot={false}
+              connectNulls
+            />
+          )}
+        </LineChart>
+      </ResponsiveContainer>
+    </>
   )
 }

@@ -1,0 +1,44 @@
+{
+  "ticker": "BRK-B",
+  "return_forecaster": {
+    "metrics": {
+      "rmse_5d": 0.02416775535868681,
+      "mae_5d": 0.01934747804971243,
+      "direction_accuracy_5d": 0.5215419501133787,
+      "ic_5d": 0.1841193820185417,
+      "interval_coverage_5d": 0.5714285714285714,
+      "rmse_21d": 0.04183857743633423,
+      "mae_21d": 0.032993050563077386,
+      "direction_accuracy_21d": 0.5895691609977324,
+      "ic_21d": 0.11595575293054286,
+      "interval_coverage_21d": 0.47165532879818595,
+      "rmse_63d": 0.05061074100878071,
+      "mae_63d": 0.041413610975597516,
+      "direction_accuracy_63d": 0.8069767441860465,
+      "ic_63d": 0.6598625245687243,
+      "interval_coverage_63d": 0.3116279069767442,
+      "rmse_126d": 0.05510332208805696,
+      "mae_126d": 0.046329521487334505,
+      "direction_accuracy_126d": 0.7874659400544959,
+      "ic_126d": 0.7839774053653032,
+      "interval_coverage_126d": 0.4223433242506812
+    },
+    "n_folds": 7,
+    "n_predictions": 1764,
+    "horizons": [
+      "5d",
+      "21d",
+      "63d",
+      "126d"
+    ]
+  },
+  "fair_value_estimator": {
+    "metrics": {
+      "mae": 26.426096667508148,
+      "rmse": 33.697093124933154,
+      "mean_valuation_gap": 0.05307182364297521
+    },
+    "n_folds": 7,
+    "n_predictions": 441
+  }
+}

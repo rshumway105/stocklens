@@ -2,7 +2,10 @@ import { useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: '/api',
+  // VITE_API_URL = full backend origin (e.g. https://xyz.railway.app).
+  // Falls back to '' so the Vite dev proxy (/api → localhost:8000) still works
+  // when the env var is not set.
+  baseURL: `${import.meta.env.VITE_API_URL ?? ''}/api`,
   timeout: 30000,
 })
 

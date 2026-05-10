@@ -149,6 +149,20 @@ class ReportBuilder:
 
         logger.info("Report built for {} — signal: {}, confidence: {}",
                      ticker, signal, confidence)
+
+        if signal not in ("unknown",):
+            try:
+                from backend.data.storage import insert_signal_history
+                insert_signal_history(
+                    ticker=ticker,
+                    signal=signal,
+                    confidence_score=confidence,
+                    model_predicted_price=fair_value,
+                    actual_price_at_signal=current_price,
+                )
+            except Exception as e:
+                logger.warning("Failed to persist signal history for {}: {}", ticker, e)
+
         return report
 
     def _build_forecasts(self, X_latest: pd.DataFrame) -> list[ReturnForecast]:

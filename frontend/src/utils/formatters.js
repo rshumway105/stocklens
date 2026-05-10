@@ -76,13 +76,57 @@ export function signalBadgeClass(signal) {
 }
 
 /**
+ * Confidence conviction tiers.
+ * Each tier has a label, score range, color class, and plain-English description.
+ */
+export const CONVICTION_TIERS = [
+  {
+    label: 'High Conviction',
+    min: 70,
+    max: 100,
+    color: 'text-accent-green',
+    bg: 'bg-accent-green/10 border-accent-green/30',
+    description: 'Both models strongly agree, tight forecast range, and a meaningful valuation gap.',
+  },
+  {
+    label: 'Moderate Conviction',
+    min: 40,
+    max: 69,
+    color: 'text-accent-amber',
+    bg: 'bg-accent-amber/10 border-accent-amber/30',
+    description: 'Models broadly agree but forecast uncertainty is elevated or the valuation gap is small.',
+  },
+  {
+    label: 'Low Conviction',
+    min: 20,
+    max: 39,
+    color: 'text-accent-red',
+    bg: 'bg-accent-red/10 border-accent-red/30',
+    description: 'Models partially disagree or signal is weak. Treat with caution.',
+  },
+  {
+    label: 'Speculative',
+    min: 0,
+    max: 19,
+    color: 'text-terminal-muted',
+    bg: 'bg-terminal-elevated border-terminal-border',
+    description: 'Models conflict or insufficient data. Signal is unreliable.',
+  },
+]
+
+export function convictionTier(score) {
+  if (score == null || isNaN(score)) return null
+  return CONVICTION_TIERS.find((t) => score >= t.min && score <= t.max) || CONVICTION_TIERS[CONVICTION_TIERS.length - 1]
+}
+
+/**
  * Format signal label for display.
  */
 export function signalLabel(signal) {
   switch (signal) {
-    case 'overvalued': return 'Overvalued'
-    case 'undervalued': return 'Undervalued'
-    case 'fairly_valued': return 'Fair Value'
-    default: return 'Unknown'
+    case 'overvalued': return '↓ Overvalued'
+    case 'undervalued': return '↑ Undervalued'
+    case 'fairly_valued': return '≈ Fair Value'
+    default: return '— Unknown'
   }
 }

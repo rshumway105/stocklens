@@ -153,7 +153,7 @@ def main():
         print("Generating synthetic feature matrix...")
         feature_matrix = generate_synthetic_data()
         print(f"  Shape: {feature_matrix.shape}")
-        print(f"  Date range: {feature_matrix.index[0].date()} → {feature_matrix.index[-1].date()}")
+        print(f"  Date range: {feature_matrix.index[0].date()} to {feature_matrix.index[-1].date()}")
         print()
 
     # Return forecaster backtest
